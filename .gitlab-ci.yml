@@ -15,7 +15,7 @@ build:repo:
     - cd hive
     - dart pub get
     - repo_pub_server https://famedly.gitlab.io/company/frontend/libraries/hive/ repo
-    - repo/packages/hive/versions
+    - cd repo/packages/hive/versions
     - rm *.tar.gz
     - for f in $(ls); do tar -xf $f lib/src/backend/js/web_worker/web_worker.dart || true; dart compile js lib/src/backend/js/web_worker/web_worker.dart -O4 -o lib/src/backend/js/web_worker/web_worker.dart.js || true; tar -Af $f lib/src/backend/js/web_worker/web_worker.dart.js || true; gzip -k $f || true; done;
     - cd ../../../..
