@@ -13,6 +13,7 @@ build:repo:
     - export PATH="$PATH:$HOME/.pub-cache/bin"
     - flutter pub global activate repo_pub_server
     - cd hive
+    - dart pub get
     - dart compile js lib/src/backend/js/web_worker/web_worker.dart -O4 -o lib/src/backend/js/web_worker/web_worker.dart.js
     - repo_pub_server https://famedly.gitlab.io/company/frontend/libraries/hive/ repo
     - mv repo ../
