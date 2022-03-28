@@ -19,6 +19,7 @@ import 'package:hive/src/util/extensions.dart';
 import 'package:meta/meta.dart';
 
 export 'src/object/hive_object.dart' show HiveObject, HiveObjectMixin;
+export 'src/box_collection.dart';
 
 part 'src/annotations/hive_field.dart';
 part 'src/annotations/hive_type.dart';
@@ -36,7 +37,6 @@ part 'src/registry/type_registry.dart';
 part 'src/registry/type_adapter.dart';
 part 'src/hive_error.dart';
 part 'src/hive.dart';
-
 /// Global constant to access Hive.
 // ignore: non_constant_identifier_names
 final HiveInterface Hive = HiveImpl();

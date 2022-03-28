@@ -6,57 +6,60 @@ import 'package:hive/src/backend/js/web_worker/web_worker_interface.dart';
 class IndexedDbWebWorkerInterface {
   final HiveCipher? cipher;
   final WebWorkerInterface worker;
+  final String? collection;
 
-  IndexedDbWebWorkerInterface(this.cipher)
+  IndexedDbWebWorkerInterface(this.cipher, this.collection)
       : worker = WebWorkerInterface(cipher);
 
   Future deleteDatabase(String name, {void Function(Event e)? onBlocked}) {
-    return worker.query(['deleteDatabase', name]);
+    return worker.query(['deleteDatabase', name, collection]);
   }
 
   Future<DatabaseImplementation> open(
     String name,
   ) async {
-    final response = await worker.query<String>(['open', name]);
-    return DatabaseImplementation.fromWorkerResponse(worker, response);
+    final response =
+        await worker.query<String>(['open', collection ?? name, name]);
+    return DatabaseImplementation.fromWorkerResponse(worker, collection, name);
   }
 }
 
 class DatabaseImplementation {
   final WebWorkerInterface worker;
+  final String? collection;
   final String name;
 
   factory DatabaseImplementation.fromWorkerResponse(
-          WebWorkerInterface worker, String name) =>
-      DatabaseImplementation._(worker, name);
+          WebWorkerInterface worker, String? collection, String name) =>
+      DatabaseImplementation._(worker, collection, name);
 
-  DatabaseImplementation._(this.worker, this.name);
+  DatabaseImplementation._(this.worker, this.collection, this.name);
 
   void close() {
-    worker.query(['close', name]);
+    worker.query(['close', collection, name]);
   }
 
-  Future<ObjectStoreImplementation> createObjectStore(
-    String name,
-  ) async {
-    final response = await worker.query<String>([
-      'createObjectStore',
-      this.name,
-      name,
-    ]);
-    return ObjectStoreImplementation.fromDatabase(this, response);
-  }
+  // Future<ObjectStoreImplementation> createObjectStore(
+  //   String name,
+  // ) async {
+  //   final response = await worker.query<String>([
+  //     'createObjectStore',
+  //     collection,
+  //     name,
+  //   ]);
+  //   return ObjectStoreImplementation.fromDatabase(this, response);
+  // }
 
-  Future<ObjectStoreImplementation> transaction(
-      String name, String mode) async {
-    final response =
-        await worker.query<String>(['transaction', this.name, name, mode]);
-    return ObjectStoreImplementation.fromDatabase(this, response);
-  }
+  // Future<ObjectStoreImplementation> transaction(
+  //     String name, String mode) async {
+  //   final response =
+  //       await worker.query<String>(['transaction', this.name, name, mode]);
+  //   return ObjectStoreImplementation.fromDatabase(this, response);
+  // }
 
-  ObjectStoreImplementation makeObjectStore(String box) {
-    return ObjectStoreImplementation.fromDatabase(this, box);
-  }
+  // ObjectStoreImplementation makeObjectStore(String box) {
+  //   return ObjectStoreImplementation.fromDatabase(this, box);
+  // }
 }
 
 class ObjectStoreImplementation {

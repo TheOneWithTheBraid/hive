@@ -23,6 +23,7 @@ abstract class HiveInterface implements TypeRegistry {
     bool crashRecovery = true,
     String? path,
     Uint8List? bytes,
+    String? collection,
     @Deprecated('Use encryptionCipher instead') List<int>? encryptionKey,
   });
 
@@ -37,6 +38,7 @@ abstract class HiveInterface implements TypeRegistry {
     CompactionStrategy compactionStrategy = defaultCompactionStrategy,
     bool crashRecovery = true,
     String? path,
+    String? collection,
     @Deprecated('Use encryptionCipher instead') List<int>? encryptionKey,
   });
 
