@@ -94,9 +94,8 @@ class StorageBackendWebWorker extends StorageBackend {
   }
 
   @override
-  Future<void> close() {
-    _db.close();
-    return Future.value();
+  Future<void> close() async {
+    return _db.close();
   }
 
   @override

@@ -65,21 +65,26 @@ main() async {
 
       switch (command) {
         case 'open':
-          final name = data[2] as String;
+          final collection = data[2];
+          final name = data[3] as String;
+
+          // compatibility for old store format
+          final databaseName = collection ?? name;
+          final objectStoreName = collection == null ? 'box' : name;
+
           final dbCompleter = Completer<Database?>();
-          indexedDB!.open(name, version: 1, onUpgradeNeeded: (e) {
+          indexedDB!.open(databaseName, version: 1, onUpgradeNeeded: (e) {
             final db = e.target.result as Database;
-            if (!db.objectStoreNames!.contains('box')) {
-              db.createObjectStore('box');
+            if (!db.objectStoreNames!.contains(objectStoreName)) {
+              db.createObjectStore(objectStoreName);
             }
-            // dbCompleter.complete(db);
           }, onBlocked: (event) {
             log('Error opening indexed DB');
             dbCompleter.complete(null);
           }).then(dbCompleter.complete);
           final db = await dbCompleter.future;
           if (db != null) {
-            _databases[name] = db;
+            _databases[databaseName] = db;
           }
           respond(db?.name);
           break;
@@ -94,6 +99,13 @@ main() async {
           final database = data[2] as String;
           final name = data[3] as String;
           final result = _databases[database]!.createObjectStore(name);
+          respond(result);
+          break;
+
+        case 'containsObjectStoreKey':
+          final database = data[2] as String;
+          final name = data[3] as String;
+          final result = _databases[database]!.objectStoreNames!.contains(name);
           respond(result);
           break;
 

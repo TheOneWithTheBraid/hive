@@ -15,13 +15,21 @@ class BackendManager implements BackendManagerInterface {
       BackendManager();
 
   @override
-  Future<StorageBackend> open(
-      String name, String? path, bool crashRecovery, HiveCipher? cipher) async {
+  Future<StorageBackend> open(String name, String? path, bool crashRecovery,
+      HiveCipher? cipher, String? collection) async {
     if (path == null) {
       throw HiveError('You need to initialize Hive or '
           'provide a path to store the box.');
     }
+
+    if (path.endsWith(_delimiter)) path = path.substring(0, path.length - 1);
+
+    if (collection != null) {
+      path = path + collection;
+    }
+
     var dir = Directory(path);
+
     if (!await dir.exists()) {
       await dir.create(recursive: true);
     }
@@ -55,8 +63,15 @@ class BackendManager implements BackendManagerInterface {
   }
 
   @override
-  Future<void> deleteBox(String name, String? path) async {
+  Future<void> deleteBox(String name, String? path, String? collection) async {
     ArgumentError.checkNotNull(path, 'path');
+
+    if (path!.endsWith(_delimiter)) path = path.substring(0, path.length - 1);
+
+    if (collection != null) {
+      path = path + collection;
+    }
+
     await _deleteFileIfExists(File('$path$_delimiter$name.hive'));
     await _deleteFileIfExists(File('$path$_delimiter$name.hivec'));
     await _deleteFileIfExists(File('$path$_delimiter$name.lock'));
@@ -69,8 +84,15 @@ class BackendManager implements BackendManagerInterface {
   }
 
   @override
-  Future<bool> boxExists(String name, String? path) async {
+  Future<bool> boxExists(String name, String? path, String? collection) async {
     ArgumentError.checkNotNull(path, 'path');
+
+    if (path!.endsWith(_delimiter)) path = path.substring(0, path.length - 1);
+
+    if (collection != null) {
+      path = path + collection;
+    }
+
     return await File('$path$_delimiter$name.hive').exists() ||
         await File('$path$_delimiter$name.hivec').exists() ||
         await File('$path$_delimiter$name.lock').exists();

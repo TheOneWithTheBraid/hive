@@ -22,6 +22,10 @@ class IndexedDbWebWorkerInterface {
         await worker.query<String>(['open', collection ?? name, name]);
     return DatabaseImplementation.fromWorkerResponse(worker, collection, name);
   }
+
+  Future<bool> hasObjectStore(String objectStoreName) async {
+    return
+        await worker.query<bool>(['containsObjectStoreKey', collection, objectStoreName]);}
 }
 
 class DatabaseImplementation {
